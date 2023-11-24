@@ -1,1 +1,1 @@
-CGO_CFLAGS="-w" go run main.go
+CGO_CFLAGS="-w" go run *.go
