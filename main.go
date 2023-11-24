@@ -2,13 +2,13 @@ package main
 
 import (
     "fmt"
+    "github.com/disintegration/imaging"
     "github.com/go-gl/gl/v4.1-core/gl"
     "github.com/go-gl/glfw/v3.3/glfw"
-    "image/jpeg"
-
-    //   "github.com/go-gl/mathgl/mgl32"
+    "github.com/go-gl/mathgl/mgl32"
     "image"
     "image/draw"
+    "image/jpeg"
     "log"
     "os"
     "runtime"
@@ -80,7 +80,7 @@ func build_vertex_buffer() Vertex_Buffer{
     ret.add_vertex([]float32{ 0.5,-0.5, 0, 0,   1.0, 0,   1.0, 1.0})
     ret.add_vertex([]float32{-0.5,-0.5, 0, 0,   0,   1.0, 0,   1.0})
     ret.add_vertex([]float32{-0.5, 0.5, 0, 0,   0,   1.0, 0,   0})
-    ret.add_indexes([]uint32{0,1,3, 1,2,3})
+    ret.add_indexes([]uint32{0,3,1, 1,3,2})
     return ret
 }
 
@@ -98,6 +98,24 @@ func main() {
     _, err := newTexture0("./IMG_4401.jpg")
     chk(err)
     gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("tex\x00")), 0)
+
+    model := mgl32.Ident4()
+    model = mgl32.HomogRotate3DX(mgl32.DegToRad(-40.0))
+    view := mgl32.Ident4()
+    view = view.Mul4(mgl32.Translate3D(0,0, -0.6))
+    projection := mgl32.Perspective(mgl32.RadToDeg(45), 800.0 / 600.0, 0, 100.0)
+
+
+
+    uniform := gl.GetUniformLocation(program, gl.Str("model\x00"))
+    gl.UniformMatrix4fv(uniform, 1, false, &model[0])
+
+    uniform = gl.GetUniformLocation(program, gl.Str("view\x00"))
+    gl.UniformMatrix4fv(uniform, 1, false, &view[0])
+
+    uniform = gl.GetUniformLocation(program, gl.Str("projection\x00"))
+    gl.UniformMatrix4fv(uniform, 1, false, &projection[0])
+
 
 
     for !window.ShouldClose() {
@@ -183,12 +201,13 @@ func newTexture0(file string) (uint32, error) {
     }
     img,  err := jpeg.Decode(imgFile)
     chk(err)
-
+    img = imaging.Rotate180(img)
     rgba := image.NewRGBA(img.Bounds())
     if rgba.Stride != rgba.Rect.Size().X*4 {
         return 0, fmt.Errorf("unsupported stride")
     }
     draw.Draw(rgba, rgba.Bounds(), img, image.Point{0, 0}, draw.Src)
+
 
     var texture uint32
     gl.GenTextures(1, &texture)
