@@ -136,10 +136,10 @@ func main() {
     gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("tex\x00")), 0)
 
     model := mgl32.Ident4()
-    //model = mgl32.HomogRotate3DX(mgl32.DegToRad(-40.0))
+    model = mgl32.HomogRotate3DX(mgl32.DegToRad(-40.0))
     view := mgl32.Ident4()
-    view = view.Mul4(mgl32.Translate3D(0,0, -1))
-    projection := mgl32.Perspective(mgl32.RadToDeg(45), 800.0 / 600.0, 0, 100.0)
+    view = view.Mul4(mgl32.Translate3D(0,0, -3))
+    projection := mgl32.Perspective(mgl32.DegToRad(45), 800.0 / 600.0, 0.1, 100.0)
 
 
 
@@ -247,6 +247,7 @@ func newTexture0(file string) (uint32, error) {
     img,  err := jpeg.Decode(imgFile)
     chk(err)
     img = imaging.Rotate180(img)
+    img = imaging.FlipH(img)
     rgba := image.NewRGBA(img.Bounds())
     if rgba.Stride != rgba.Rect.Size().X*4 {
         return 0, fmt.Errorf("unsupported stride")
