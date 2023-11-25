@@ -67,20 +67,53 @@ func build_vertex_buffer() Vertex_Buffer{
         name:       "pos",
         num_floats: 3,
     })
-    ret.add_attribute(Vertex_Attribute{
-        name:       "color",
-        num_floats: 3,
-    })
+
     ret.add_attribute(Vertex_Attribute{
         name:       "texture_pos",
         num_floats: 2,
     })
 
-    ret.add_vertex([]float32{ 0.5, 0.5, 0, 1.0, 0,   0,   1.0, 0})
-    ret.add_vertex([]float32{ 0.5,-0.5, 0, 0,   1.0, 0,   1.0, 1.0})
-    ret.add_vertex([]float32{-0.5,-0.5, 0, 0,   0,   1.0, 0,   1.0})
-    ret.add_vertex([]float32{-0.5, 0.5, 0, 0,   0,   1.0, 0,   0})
-    ret.add_indexes([]uint32{0,3,1, 1,3,2})
+    ret.add_vertex([]float32{-0.5, -0.5, -0.5, 0.0, 0.0})
+    ret.add_vertex([]float32{0.5, -0.5, -0.5, 1.0, 0.0})
+    ret.add_vertex([]float32{0.5, 0.5, -0.5, 1.0, 1.0})
+    ret.add_vertex([]float32{0.5, 0.5, -0.5, 1.0, 1.0})
+    ret.add_vertex([]float32{-0.5, 0.5, -0.5, 0.0, 1.0})
+    ret.add_vertex([]float32{-0.5, -0.5, -0.5, 0.0, 0.0})
+
+    ret.add_vertex([]float32{-0.5, -0.5, 0.5, 0.0, 0.0})
+    ret.add_vertex([]float32{0.5, -0.5, 0.5, 1.0, 0.0})
+    ret.add_vertex([]float32{0.5, 0.5, 0.5, 1.0, 1.0})
+    ret.add_vertex([]float32{0.5, 0.5, 0.5, 1.0, 1.0})
+    ret.add_vertex([]float32{-0.5, 0.5, 0.5, 0.0, 1.0})
+    ret.add_vertex([]float32{-0.5, -0.5, 0.5, 0.0, 0.0})
+
+    ret.add_vertex([]float32{-0.5, 0.5, 0.5, 1.0, 0.0})
+    ret.add_vertex([]float32{-0.5, 0.5, -0.5, 1.0, 1.0})
+    ret.add_vertex([]float32{-0.5, -0.5, -0.5, 0.0, 1.0})
+    ret.add_vertex([]float32{-0.5, -0.5, -0.5, 0.0, 1.0})
+    ret.add_vertex([]float32{-0.5, -0.5, 0.5, 0.0, 0.0})
+    ret.add_vertex([]float32{-0.5, 0.5, 0.5, 1.0, 0.0})
+
+    ret.add_vertex([]float32{0.5, 0.5, 0.5, 1.0, 0.0})
+    ret.add_vertex([]float32{0.5, 0.5, -0.5, 1.0, 1.0})
+    ret.add_vertex([]float32{0.5, -0.5, -0.5, 0.0, 1.0})
+    ret.add_vertex([]float32{0.5, -0.5, -0.5, 0.0, 1.0})
+    ret.add_vertex([]float32{0.5, -0.5, 0.5, 0.0, 0.0})
+    ret.add_vertex([]float32{0.5, 0.5, 0.5, 1.0, 0.0})
+
+    ret.add_vertex([]float32{-0.5, -0.5, -0.5, 0.0, 1.0})
+    ret.add_vertex([]float32{0.5, -0.5, -0.5, 1.0, 1.0})
+    ret.add_vertex([]float32{0.5, -0.5, 0.5, 1.0, 0.0})
+    ret.add_vertex([]float32{0.5, -0.5, 0.5, 1.0, 0.0})
+    ret.add_vertex([]float32{-0.5, -0.5, 0.5, 0.0, 0.0})
+    ret.add_vertex([]float32{-0.5, -0.5, -0.5, 0.0, 1.0})
+
+    ret.add_vertex([]float32{-0.5, 0.5, -0.5, 0.0, 1.0})
+    ret.add_vertex([]float32{0.5, 0.5, -0.5, 1.0, 1.0})
+    ret.add_vertex([]float32{0.5, 0.5, 0.5, 1.0, 0.0})
+    ret.add_vertex([]float32{0.5, 0.5, 0.5, 1.0, 0.0})
+    ret.add_vertex([]float32{-0.5, 0.5, 0.5, 0.0, 0.0})
+    ret.add_vertex([]float32{-0.5, 0.5, -0.5, 0.0, 1.0})
     return ret
 }
 
@@ -95,14 +128,17 @@ func main() {
     vbuf := build_vertex_buffer()
     vao := vbuf.create_vao()
     gl.UseProgram(program)
+    gl.Enable(gl.DEPTH_TEST)
+    gl.DepthFunc(gl.LESS)
+
     _, err := newTexture0("./IMG_4401.jpg")
     chk(err)
     gl.Uniform1i(gl.GetUniformLocation(program, gl.Str("tex\x00")), 0)
 
     model := mgl32.Ident4()
-    model = mgl32.HomogRotate3DX(mgl32.DegToRad(-40.0))
+    //model = mgl32.HomogRotate3DX(mgl32.DegToRad(-40.0))
     view := mgl32.Ident4()
-    view = view.Mul4(mgl32.Translate3D(0,0, -0.6))
+    view = view.Mul4(mgl32.Translate3D(0,0, -1))
     projection := mgl32.Perspective(mgl32.RadToDeg(45), 800.0 / 600.0, 0, 100.0)
 
 
@@ -119,13 +155,22 @@ func main() {
 
 
     for !window.ShouldClose() {
+        err := gl.GetError()
+        if err > 0{
+            fmt.Println(err)
+        }
+
         gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
         gl.ClearColor(0.2, 0.3, 0.3, 1.0)
 
+        model = model.Mul4(mgl32.HomogRotate3DX(mgl32.DegToRad(1)))
+        uniform := gl.GetUniformLocation(program, gl.Str("model\x00"))
+        gl.UniformMatrix4fv(uniform, 1, false, &model[0])
+
         gl.UseProgram(program)
         gl.BindVertexArray(vao)
-        //gl.DrawArrays(gl.TRIANGLES, 0, vbuf.get_len())
-        gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.Ptr(nil))
+        gl.DrawArrays(gl.TRIANGLES, 0, vbuf.get_len())
+        //gl.DrawElements(gl.TRIANGLES, 6, gl.UNSIGNED_INT, gl.Ptr(nil))
 
         window.SwapBuffers()
         glfw.PollEvents()
